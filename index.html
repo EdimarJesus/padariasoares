@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#183b2b">
+<title>Padaria • Gerador de Recibos</title>
+<style>
+:root{--green:#183b2b;--green2:#24543d;--cream:#f6f5f0;--paper:#fff;--ink:#202522;--muted:#737b75;--line:#e3e7e2;--gold:#d8ad62;--red:#b83c35;--shadow:0 12px 34px rgba(25,45,33,.09)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--cream);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{max-width:1180px;margin:auto;padding:18px 18px 92px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:44px;height:44px;border-radius:14px;background:var(--green);display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:var(--shadow)}.brand h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.4px}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}.offline{font-size:11px;color:#286342;background:#e4f1e8;border:1px solid #cde3d4;padding:7px 10px;border-radius:99px;white-space:nowrap}
+.tabs{display:flex;gap:7px;overflow:auto;padding:5px;background:#eaece7;border-radius:14px;margin-bottom:18px;scrollbar-width:none}.tabs button{border:0;background:transparent;color:#5e6861;padding:11px 15px;border-radius:10px;font-size:13px;font-weight:700;white-space:nowrap}.tabs button.active{background:#fff;color:var(--green);box-shadow:0 2px 8px #1b382012}
+.page{display:none}.page.active{display:block}.sectionhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:4px 0 16px}.sectionhead h2{font-size:23px;letter-spacing:-.7px;margin:0}.sectionhead p{font-size:13px;color:var(--muted);margin:5px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(310px,.92fr);gap:18px;align-items:start}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.panel h3{font-size:15px;margin:0 0 15px}.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:750;color:#5f6962;letter-spacing:.25px}.field input,.field select,.field textarea{width:100%;border:1px solid #dfe5df;background:#fff;border-radius:10px;padding:11px 12px;outline:none;color:var(--ink);min-width:0}.field input:focus,.field select:focus,.field textarea:focus{border-color:#6b9a7b;box-shadow:0 0 0 3px #dcebe0}.field textarea{resize:vertical;min-height:76px}
+.btn{border:0;border-radius:11px;padding:11px 14px;font-size:13px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px}.primary{background:var(--green);color:white}.primary:hover{background:var(--green2)}.secondary{background:#edf2ee;color:var(--green)}.ghost{background:transparent;color:#59645d;border:1px solid var(--line)}.danger{background:#fff0ee;color:var(--red)}.small{padding:8px 10px;font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.divider{height:1px;background:var(--line);margin:17px 0}
+.product-add{display:grid;grid-template-columns:minmax(0,1fr) 85px 112px auto;gap:8px;align-items:end}.product-add .field label{white-space:nowrap}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;font-size:12px;min-width:450px}th{text-align:left;color:#657069;font-size:10px;text-transform:uppercase;letter-spacing:.4px;background:#f6f8f5;padding:10px 8px}td{padding:10px 8px;border-bottom:1px solid #edf0ec}td.num,th.num{text-align:right}.qtyinput{width:66px;padding:7px;border:1px solid var(--line);border-radius:7px;text-align:center}
+.totalbar{display:flex;justify-content:space-between;align-items:center;margin:14px 0 2px;padding:13px 14px;background:#f3f7f3;border-radius:12px}.totalbar span{font-size:13px;color:#5d685f;font-weight:700}.totalbar strong{font-size:22px;color:var(--green);letter-spacing:-.5px}
+.preview-panel{position:sticky;top:12px}.preview-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.preview-head h3{margin:0}.preview-note{font-size:10px;color:#7c857e}
+.receipt{background:#fff;border:1px solid #d8ddd8;color:#252925;padding:18px 17px;max-width:440px;margin:0 auto;box-shadow:0 5px 18px #1d302014;font-family:Arial,sans-serif}
+.receipt-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;border-bottom:2px solid #333;padding-bottom:9px}.receipt-logo{font-size:25px;line-height:1;font-weight:900;text-transform:uppercase;overflow-wrap:anywhere}.receipt-logo img{max-width:100%;max-height:56px;object-fit:contain}.receipt-contact{font-size:9px;line-height:1.65;overflow-wrap:anywhere}.receipt-contact div{display:flex;gap:4px;align-items:flex-start}.receipt-contact b{font-size:10px}.receipt-company{text-align:center;font-size:9px;margin-top:5px;color:#555}.receipt-meta{border:1px solid #555;margin-top:8px;padding:6px;font-size:9px;line-height:1.8}.receipt-meta .line{display:flex;gap:8px}.receipt-title{text-align:center;font-size:16px;font-weight:900;margin:9px 0 5px}.receipt-number{text-align:center;font-size:9px;margin-bottom:6px;color:#444}.receipt-table{width:100%;border-collapse:collapse;font-size:9px;min-width:0}.receipt-table th,.receipt-table td{border:1px solid #555;padding:5px 4px;color:#222;background:#fff;text-transform:none;letter-spacing:0}.receipt-table th{font-weight:700;text-align:center;font-size:9px}.receipt-table td:nth-child(1),.receipt-table td:nth-child(3),.receipt-table td:nth-child(4){text-align:right}.receipt-total{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:5px;font-size:14px;font-weight:900}.receipt-total strong{border:1px solid #444;min-width:84px;text-align:right;padding:5px 7px}.receipt-payment{text-align:right;font-size:9px;margin-top:4px}.receipt-signatures{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;text-align:center;font-size:9px;font-weight:bold}.receipt-signatures div{border-top:1px solid #555;padding-top:5px}.receipt-footer{font-size:8px;line-height:1.35;margin-top:12px;border-top:1px solid #bbb;padding-top:6px;color:#444;white-space:pre-wrap}.empty{color:#8a938c;text-align:center;padding:25px 8px;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px}.stat span{font-size:11px;color:var(--muted)}.stat strong{display:block;font-size:22px;margin-top:5px;color:var(--green)}
+.searchrow{display:flex;gap:9px;margin-bottom:12px}.searchrow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.product-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-card{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:8px;align-items:center}.product-card strong{font-size:13px;display:block}.product-card small{font-size:11px;color:var(--muted)}.product-card .price{font-weight:800;color:var(--green);white-space:nowrap}
+.history-item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:13px 2px}.history-item:last-child{border:0}.history-item strong{font-size:13px}.history-item small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.history-item .value{font-weight:800;color:var(--green);text-align:right}
+.logo-preview{width:74px;height:58px;border:1px dashed #cbd4cc;border-radius:9px;display:grid;place-items:center;color:#87928a;font-size:10px;overflow:hidden}.logo-preview img{width:100%;height:100%;object-fit:contain}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#203d2c;color:white;padding:11px 16px;border-radius:99px;font-size:12px;box-shadow:var(--shadow);z-index:20;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+.mobile-bottom{display:none}
+@media(max-width:800px){.app{padding:13px 12px 100px}.layout{grid-template-columns:1fr}.preview-panel{position:static}.sectionhead h2{font-size:21px}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.stat{padding:11px}.stat strong{font-size:18px}.product-add{grid-template-columns:minmax(0,1fr) 78px 105px}.product-add button{grid-column:1/-1}.receipt{max-width:100%}}
+@media(max-width:480px){.brand h1{font-size:15px}.offline{font-size:10px;padding:6px 8px}.fieldgrid{gap:9px}.panel{padding:14px}.product-add{grid-template-columns:1fr 76px}.product-add .field:nth-child(3),.product-add .field:nth-child(4){grid-column:1/-1}.product-add button{grid-column:1/-1}.cards{gap:7px}.stat span{font-size:9px}.stat strong{font-size:16px}.product-list{grid-template-columns:1fr}.receipt{padding:13px 11px}.receipt-logo{font-size:21px}.receipt-table th,.receipt-table td{padding:4px 3px}.sectionhead{align-items:flex-start;flex-direction:column}.searchrow{flex-wrap:wrap}}
+@media print{
+ @page{size:A5 portrait;margin:9mm}
+ html,body{background:#fff!important;margin:0!important;padding:0!important}
+ body *{visibility:hidden!important}
+ #receiptPrint,#receiptPrint *{visibility:visible!important}
+ #receiptPrint{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important}
+ .receipt{max-width:none!important;width:100%!important;border:0!important;box-shadow:none!important;padding:0!important}
+ .receipt-table{font-size:10px!important}.receipt-table th,.receipt-table td{font-size:10px!important;padding:6px 5px!important}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+ <header class="topbar">
+  <div class="brand"><div class="brandmark">♨</div><div><h1>Gerador de Recibos</h1><p>Controle simples de vendas da padaria</p></div></div>
+  <div class="offline">● Funciona sem internet</div>
+ </header>
+ <nav class="tabs" aria-label="Navegação">
+  <button class="active" data-page="sale">＋ Nova venda</button><button data-page="history">▤ Histórico</button><button data-page="products">♧ Produtos</button><button data-page="settings">⚙ Configurações</button>
+ </nav>
+
+ <main>
+  <section class="page active" id="page-sale">
+   <div class="sectionhead"><div><h2>Nova venda</h2><p>Adicione os produtos e emita o comprovante.</p></div><button class="btn ghost small" id="clearSale">Limpar venda</button></div>
+   <div class="layout">
+    <div class="panel">
+     <h3>Dados da venda</h3>
+     <div class="fieldgrid">
+      <div class="field"><label for="customer">CLIENTE</label><input id="customer" placeholder="Nome do cliente"></div>
+      <div class="field"><label for="phone">TELEFONE</label><input id="phone" inputmode="tel" placeholder="(00) 00000-0000"></div>
+      <div class="field"><label for="saleDate">DATA</label><input id="saleDate" type="date"></div>
+      <div class="field"><label for="payment">FORMA DE PAGAMENTO</label><select id="payment"><option>Dinheiro</option><option>PIX</option><option>Cartão de débito</option><option>Cartão de crédito</option><option>Transferência</option><option>A combinar</option></select></div>
+     </div>
+     <div class="divider"></div>
+     <h3>Adicionar produtos</h3>
+     <div class="product-add">
+      <div class="field"><label>PRODUTO</label><select id="productSelect"><option value="">Selecione um produto</option></select></div>
+      <div class="field"><label>QTD.</label><input id="addQty" type="number" min="0.01" step="0.01" value="1"></div>
+      <div class="field"><label>PREÇO UNIT. (R$)</label><input id="addPrice" type="number" min="0" step="0.01" placeholder="0,00"></div>
+      <div class="field"><label>TOTAL DO ITEM</label><input id="itemSubtotal" value="R$ 0,00" readonly></div>
+      <button class="btn primary" id="addProduct">Adicionar</button>
+     </div>
+     <div class="tablewrap">
+      <table><thead><tr><th>Produto</th><th class="num">Qtd.</th><th class="num">Unit.</th><th class="num">Total</th><th></th></tr></thead><tbody id="saleRows"><tr><td colspan="5" class="empty">Nenhum produto adicionado.</td></tr></tbody></table>
+     </div>
+     <div class="totalbar"><span>TOTAL DA VENDA</span><strong id="saleTotal">R$ 0,00</strong></div>
+     <div class="divider"></div>
+     <div class="actions"><button class="btn primary" id="issueReceipt">✓ Emitir recibo</button><button class="btn secondary" id="saveDraft">Salvar venda</button></div>
+     <p style="font-size:10px;color:#7a847d;line-height:1.5;margin:12px 0 0">Ao emitir, a venda será registrada neste dispositivo. Para manter seus dados, não limpe os dados do navegador sem antes exportar uma cópia de segurança.</p>
+    </div>
+    <div class="panel preview-panel">
+     <div class="preview-head"><h3>Pré-visualização</h3><span class="preview-note">Atualizada automaticamente</span></div>
+     <div class="receipt" id="receiptPrint">
+      <div class="receipt-top"><div class="receipt-logo" id="rLogo">SUA PADARIA</div><div class="receipt-contact" id="rContact"><div>☎ <span>(xx) x xxxx-xxxx</span></div><div>◎ <span>@sua_padaria</span></div><div>⌖ <span>ENDEREÇO DA PADARIA</span></div></div></div>
+      <div class="receipt-company" id="rCompanyExtra"></div>
+      <div class="receipt-meta"><div class="line"><span>Data: <b id="rDate">__/__/____</b></span><span>Fone: <b id="rPhone">________________</b></span></div><div>Cliente: <b id="rCustomer">________________________________________</b></div><div>End.: <b id="rAddress">________________________________________</b></div></div>
+      <div class="receipt-title">RECIBO DE VENDA</div><div class="receipt-number" id="rNumber">Nº PENDENTE</div>
+      <table class="receipt-table"><thead><tr><th style="width:12%">Qtd.</th><th>Descrição</th><th style="width:19%">Unit.</th><th style="width:20%">Total</th></tr></thead><tbody id="rRows"><tr><td colspan="4" style="text-align:center">Itens da venda</td></tr></tbody></table>
+      <div class="receipt-total">Total: <strong id="rTotal">R$ 0,00</strong></div><div class="receipt-payment" id="rPayment">Pagamento: Dinheiro</div>
+      <div class="receipt-signatures"><div>Ass. Comprador</div><div>Assinatura Loja</div></div>
+      <div class="receipt-footer" id="rFooter">Obrigado pela preferência! Volte sempre.</div>
+     </div>
+     <div class="actions" style="margin-top:13px"><button class="btn secondary" id="printReceipt" style="flex:1">▣ Imprimir / PDF</button></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="page" id="page-history">
+   <div class="sectionhead"><div><h2>Histórico de vendas</h2><p>Consulte, confira e reimprima recibos emitidos.</p></div></div>
+   <div class="cards"><div class="stat"><span>VENDAS REGISTRADAS</span><strong id="statCount">0</strong></div><div class="stat"><span>TOTAL VENDIDO</span><strong id="statTotal">R$ 0,00</strong></div><div class="stat"><span>HOJE</span><strong id="statToday">R$ 0,00</strong></div></div>
+   <div class="panel"><div class="searchrow"><input id="historySearch" placeholder="Buscar por cliente ou número do recibo"><input id="historyDate" type="date" aria-label="Filtrar por data"></div><div id="historyList"><div class="empty">Nenhuma venda registrada ainda.</div></div></div>
+  </section>
+
+  <section class="page" id="page-products">
+   <div class="sectionhead"><div><h2>Produtos</h2><p>Cadastre os itens mais vendidos para agilizar o caixa.</p></div></div>
+   <div class="panel">
+    <h3 id="productFormTitle">Cadastrar produto</h3>
+    <div class="fieldgrid">
+     <div class="field"><label for="newProductName">NOME DO PRODUTO</label><input id="newProductName" placeholder="Ex.: Pão francês"></div>
+     <div class="field"><label for="newProductPrice">PREÇO (R$)</label><input id="newProductPrice" type="number" min="0" step="0.01" placeholder="0,00"></div>
+     <div class="field"><label for="newProductUnit">UNIDADE</label><select id="newProductUnit"><option>un.</option><option>kg</option><option>g</option><option>pct.</option><option>fatia</option><option> cento</option><option>caixa</option></select></div>
+     <div class="field"><label for="newProductCategory">CATEGORIA</label><select id="newProductCategory"><option>Padaria</option><option>Confeitaria</option><option>Salgados</option><option>Bebidas</option><option>Mercearia</option><option>Outros</option></select></div>
+    </div>
+    <div class="actions" style="margin-top:13px"><button class="btn primary" id="saveProduct">Salvar produto</button><button class="btn ghost" id="cancelProductEdit" style="display:none">Cancelar edição</button></div>
+    <div class="divider"></div><div class="searchrow"><input id="productSearch" placeholder="Buscar produto..."></div><div class="product-list" id="productList"><div class="empty">Nenhum produto cadastrado.</div></div>
+   </div>
+  </section>
+
+  <section class="page" id="page-settings">
+   <div class="sectionhead"><div><h2>Configurações</h2><p>Personalize os dados que aparecem no recibo.</p></div></div>
+   <div class="panel">
+    <h3>Identificação da padaria</h3>
+    <div class="fieldgrid">
+     <div class="field full"><label for="cfgName">NOME DA PADARIA</label><input id="cfgName" placeholder="Nome da sua padaria"></div>
+     <div class="field"><label for="cfgCnpj">CNPJ (OPCIONAL)</label><input id="cfgCnpj" placeholder="00.000.000/0000-00"></div>
+     <div class="field"><label for="cfgPhone">TELEFONE / WHATSAPP</label><input id="cfgPhone" placeholder="(62) 99999-9999"></div>
+     <div class="field"><label for="cfgInstagram">INSTAGRAM</label><input id="cfgInstagram" placeholder="@sua_padaria"></div>
+     <div class="field"><label for="cfgEmail">E-MAIL (OPCIONAL)</label><input id="cfgEmail" placeholder="contato@padaria.com"></div>
+     <div class="field full"><label for="cfgAddress">ENDEREÇO</label><input id="cfgAddress" placeholder="Rua, número, bairro, cidade - UF"></div>
+     <div class="field full"><label for="cfgFooter">MENSAGEM / OBSERVAÇÃO NO RODAPÉ</label><textarea id="cfgFooter" placeholder="Obrigado pela preferência! Volte sempre."></textarea></div>
+     <div class="field"><label>LOGOTIPO</label><input id="cfgLogo" type="file" accept="image/*"><small style="color:#7b857d">PNG ou JPG. Recomendado fundo transparente.</small></div>
+     <div class="field"><label>PRÉ-VISUALIZAÇÃO</label><div class="logo-preview" id="logoPreview">Sem logo</div><button class="btn ghost small" id="removeLogo" type="button">Remover logo</button></div>
+    </div>
+    <div class="actions" style="margin-top:16px"><button class="btn primary" id="saveSettings">Salvar configurações</button></div>
+    <div class="divider"></div>
+    <h3>Dados e segurança</h3>
+    <p style="font-size:12px;color:var(--muted);line-height:1.6">Os produtos, configurações e vendas ficam salvos no armazenamento local deste navegador. Faça cópias de segurança regularmente. A exportação gera um arquivo com seus dados para guardar ou transferir.</p>
+    <div class="actions"><button class="btn secondary" id="exportData">↓ Exportar backup</button><label class="btn ghost" for="importFile">↑ Importar backup</label><input id="importFile" type="file" accept="application/json" hidden><button class="btn danger" id="eraseData">Apagar todos os dados</button></div>
+   </div>
+  </section>
+ </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+'use strict';
+const KEY='padaria_recibos_offline_v1';
+const $=id=>document.getElementById(id);
+const money=n=>(Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const fmtDate=s=>{if(!s)return '';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+let db=loadDB(), saleItems=[], editingProduct=null, logoData=db.settings.logo||'';
+function loadDB(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return {settings:{name:'SUA PADARIA',cnpj:'',phone:'',instagram:'',email:'',address:'',footer:'Obrigado pela preferência! Volte sempre.',logo:'',...(x.settings||{})},products:Array.isArray(x.products)?x.products:[],sales:Array.isArray(x.sales)?x.sales:[],nextNumber:Number(x.nextNumber)||1}}catch(e){return {settings:{name:'SUA PADARIA',cnpj:'',phone:'',instagram:'',email:'',address:'',footer:'Obrigado pela preferência! Volte sempre.',logo:''},products:[],sales:[],nextNumber:1}}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));return true}catch(e){toast('Não foi possível salvar. Exporte um backup e libere espaço no navegador.');return false}}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function total(){return saleItems.reduce((a,x)=>a+x.qty*x.price,0)}
+function go(page){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));if(page==='history')renderHistory();if(page==='products')renderProducts()}
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+$('saleDate').value=today();
+function refreshProductSelect(){const sel=$('productSelect'),old=sel.value;sel.innerHTML='<option value="">Selecione um produto</option>'+db.products.map(p=>`<option value="${p.id}">${esc(p.name)} (${money(p.price)}/${esc(p.unit)})</option>`).join('');if(db.products.some(p=>p.id===old))sel.value=old}
+function updateItemSubtotal(){
+ const qty=Number($('addQty').value)||0, price=Number($('addPrice').value)||0;
+ $('itemSubtotal').value=money(qty>0&&price>=0?qty*price:0);
+}
+$('productSelect').addEventListener('change',()=>{const p=db.products.find(x=>x.id===$('productSelect').value);if(p)$('addPrice').value=Number(p.price).toFixed(2);updateItemSubtotal()});
+$('addQty').addEventListener('input',updateItemSubtotal);
+$('addPrice').addEventListener('input',updateItemSubtotal);
+$('addProduct').addEventListener('click',()=>{const p=db.products.find(x=>x.id===$('productSelect').value),name=p?p.name:$('productSelect').selectedOptions[0]?.textContent;const qty=Number($('addQty').value),price=Number($('addPrice').value);if(!p){toast('Selecione um produto cadastrado.');return}if(!(qty>0)||!Number.isFinite(price)||price<0){toast('Confira a quantidade e o preço.');return}saleItems.push({id:uid(),productId:p.id,name:p.name,unit:p.unit,qty,price});renderSale();$('addQty').value=1;updateItemSubtotal()});
+function renderSale(){
+ $('saleRows').innerHTML=saleItems.length?saleItems.map(x=>`<tr><td>${esc(x.name)} <small style="color:#879087">(${esc(x.unit)})</small></td><td class="num"><input class="qtyinput" data-qty="${x.id}" type="number" min=".01" step=".01" value="${x.qty}"></td><td class="num">${money(x.price)}</td><td class="num">${money(x.qty*x.price)}</td><td><button class="btn danger small" data-remove="${x.id}" aria-label="Remover">×</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhum produto adicionado.</td></tr>';
+ $('saleTotal').textContent=money(total());renderReceipt();
+}
+$('saleRows').addEventListener('input',e=>{const id=e.target.dataset.qty;if(id){const item=saleItems.find(x=>x.id===id),v=Number(e.target.value);if(item&&v>0){item.qty=v;const row=e.target.closest('tr');row.children[3].textContent=money(item.qty*item.price);$('saleTotal').textContent=money(total());renderReceipt()}}});
+$('saleRows').addEventListener('change',e=>{const id=e.target.dataset.qty;if(id){const item=saleItems.find(x=>x.id===id),v=Number(e.target.value);if(item&&v>0){item.qty=v;renderSale()}else toast('Informe uma quantidade válida.')}});
+$('saleRows').addEventListener('click',e=>{const id=e.target.dataset.remove;if(id){saleItems=saleItems.filter(x=>x.id!==id);renderSale()}});
+function renderReceipt(sale=null){
+ const s=db.settings;const customer=sale?sale.customer:$('customer').value,phone=sale?sale.phone:$('phone').value,date=sale?sale.date:$('saleDate').value,payment=sale?sale.payment:$('payment').value,items=sale?sale.items:saleItems,sum=sale?sale.total:total();
+ $('rLogo').innerHTML=s.logo?`<img src="${s.logo}" alt="Logotipo">`:esc(s.name||'SUA PADARIA');
+ $('rContact').innerHTML=`${s.phone?`<div>☎ <span>${esc(s.phone)}</span></div>`:''}${s.instagram?`<div>◎ <span>${esc(s.instagram)}</span></div>`:''}${s.address?`<div>⌖ <span>${esc(s.address)}</span></div>`:''}${s.email?`<div>✉ <span>${esc(s.email)}</span></div>`:''}`;
+ $('rCompanyExtra').textContent=s.cnpj?'CNPJ: '+s.cnpj:'';
+ $('rDate').textContent=fmtDate(date)||'__/__/____';$('rPhone').textContent=phone||'________________';
+ $('rCustomer').textContent=customer||'________________________________________';$('rAddress').textContent=s.address||'________________________________________';
+ $('rNumber').textContent=sale?`Nº ${String(sale.number).padStart(6,'0')}`:'Nº A GERAR';
+ $('rRows').innerHTML=items.length?items.map(x=>`<tr><td>${esc(x.qty)}</td><td>${esc(x.name)}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center">Itens da venda</td></tr>';
+ $('rTotal').textContent=money(sum);$('rPayment').textContent='Pagamento: '+esc(payment);$('rFooter').textContent=s.footer||'Obrigado pela preferência!';
+}
+['customer','phone','saleDate','payment'].forEach(id=>$(id).addEventListener('input',()=>renderReceipt()));
+$('printReceipt').addEventListener('click',()=>{renderReceipt();window.print()});
+function currentSale(){return {id:uid(),number:db.nextNumber,date:$('saleDate').value||today(),time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),customer:$('customer').value.trim(),phone:$('phone').value.trim(),payment:$('payment').value,items:saleItems.map(x=>({...x})),total:total()}}
+function recordSale(){if(!saleItems.length){toast('Adicione pelo menos um produto.');return null}const s=currentSale();db.sales.unshift(s);db.nextNumber++;persist();renderHistory();return s}
+$('issueReceipt').addEventListener('click',()=>{const s=recordSale();if(!s)return;renderReceipt(s);go('sale');setTimeout(()=>window.print(),150);toast('Recibo emitido e venda registrada.')});
+$('saveDraft').addEventListener('click',()=>{if(!recordSale())return;saleItems=[];$('customer').value='';$('phone').value='';$('saleDate').value=today();renderSale();toast('Venda salva no histórico.')});
+$('clearSale').addEventListener('click',()=>{if(saleItems.length&&!confirm('Limpar os itens desta venda?'))return;saleItems=[];$('customer').value='';$('phone').value='';$('saleDate').value=today();$('payment').value='Dinheiro';renderSale()});
+function renderHistory(){
+ const q=$('historySearch').value.toLowerCase(),date=$('historyDate').value;const rows=db.sales.filter(s=>(!date||s.date===date)&&(!q||String(s.number).includes(q)||(s.customer||'').toLowerCase().includes(q)));
+ $('statCount').textContent=db.sales.length;$('statTotal').textContent=money(db.sales.reduce((a,s)=>a+s.total,0));$('statToday').textContent=money(db.sales.filter(s=>s.date===today()).reduce((a,s)=>a+s.total,0));
+ $('historyList').innerHTML=rows.length?rows.map(s=>`<div class="history-item"><div><strong>Recibo Nº ${String(s.number).padStart(6,'0')} · ${esc(s.customer||'Cliente não informado')}</strong><small>${fmtDate(s.date)} às ${esc(s.time||'')} · ${s.items.length} item(ns) · ${esc(s.payment)}</small></div><div><div class="value">${money(s.total)}</div><div class="actions" style="justify-content:flex-end;margin-top:6px"><button class="btn secondary small" data-reprint="${s.id}">Imprimir</button><button class="btn danger small" data-delete-sale="${s.id}">Excluir</button></div></div></div>`).join(''):'<div class="empty">Nenhuma venda encontrada.</div>';
+}
+$('historySearch').addEventListener('input',renderHistory);$('historyDate').addEventListener('change',renderHistory);
+$('historyList').addEventListener('click',e=>{const rid=e.target.dataset.reprint,did=e.target.dataset.deleteSale;if(rid){const s=db.sales.find(x=>x.id===rid);if(s){renderReceipt(s);window.print()}}if(did&&confirm('Excluir esta venda do histórico?')){db.sales=db.sales.filter(x=>x.id!==did);persist();renderHistory();toast('Venda excluída.')}});
+function renderProducts(){
+ const q=$('productSearch').value.toLowerCase(),items=db.products.filter(p=>p.name.toLowerCase().includes(q));
+ $('productList').innerHTML=items.length?items.map(p=>`<div class="product-card"><div><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${esc(p.unit)}</small></div><div style="text-align:right"><div class="price">${money(p.price)}</div><div class="actions" style="justify-content:flex-end;margin-top:5px"><button class="btn ghost small" data-edit-product="${p.id}">Editar</button><button class="btn danger small" data-delete-product="${p.id}">×</button></div></div></div>`).join(''):'<div class="empty">Nenhum produto cadastrado.</div>';
+ refreshProductSelect();
+}
+$('productSearch').addEventListener('input',renderProducts);
+function resetProductForm(){editingProduct=null;$('newProductName').value='';$('newProductPrice').value='';$('newProductUnit').value='un.';$('newProductCategory').value='Padaria';$('productFormTitle').textContent='Cadastrar produto';$('saveProduct').textContent='Salvar produto';$('cancelProductEdit').style.display='none'}
+$('saveProduct').addEventListener('click',()=>{const name=$('newProductName').value.trim(),price=Number($('newProductPrice').value);if(!name||$('newProductPrice').value===''||!Number.isFinite(price)||price<0){toast('Informe nome e preço válido.');return}const data={name,price,unit:$('newProductUnit').value.trim(),category:$('newProductCategory').value};if(editingProduct){Object.assign(db.products.find(p=>p.id===editingProduct),data)}else db.products.push({id:uid(),...data});persist();resetProductForm();renderProducts();toast('Produto salvo.')});
+$('cancelProductEdit').addEventListener('click',resetProductForm);
+$('productList').addEventListener('click',e=>{const id=e.target.dataset.editProduct,del=e.target.dataset.deleteProduct;if(id){const p=db.products.find(x=>x.id===id);if(p){editingProduct=id;$('newProductName').value=p.name;$('newProductPrice').value=p.price;$('newProductUnit').value=p.unit;$('newProductCategory').value=p.category;$('productFormTitle').textContent='Editar produto';$('saveProduct').textContent='Salvar alterações';$('cancelProductEdit').style.display='inline-flex';window.scrollTo({top:0,behavior:'smooth'})}}if(del&&confirm('Excluir este produto do cadastro?')){db.products=db.products.filter(p=>p.id!==del);persist();renderProducts();toast('Produto excluído.')}});
+function fillSettings(){const s=db.settings;$('cfgName').value=s.name||'';$('cfgCnpj').value=s.cnpj||'';$('cfgPhone').value=s.phone||'';$('cfgInstagram').value=s.instagram||'';$('cfgEmail').value=s.email||'';$('cfgAddress').value=s.address||'';$('cfgFooter').value=s.footer||'';renderLogoPreview();renderReceipt()}
+function renderLogoPreview(){$('logoPreview').innerHTML=logoData?`<img src="${logoData}" alt="Logo">`:'Sem logo'}
+$('cfgLogo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Selecione um arquivo de imagem.');return}if(f.size>2*1024*1024){toast('A imagem deve ter até 2 MB.');e.target.value='';return}const reader=new FileReader();reader.onload=()=>{logoData=reader.result;renderLogoPreview()};reader.readAsDataURL(f)});
+$('removeLogo').addEventListener('click',()=>{logoData='';$('cfgLogo').value='';renderLogoPreview()});
+$('saveSettings').addEventListener('click',()=>{db.settings={name:$('cfgName').value.trim()||'SUA PADARIA',cnpj:$('cfgCnpj').value.trim(),phone:$('cfgPhone').value.trim(),instagram:$('cfgInstagram').value.trim(),email:$('cfgEmail').value.trim(),address:$('cfgAddress').value.trim(),footer:$('cfgFooter').value.trim(),logo:logoData};persist();fillSettings();toast('Configurações salvas.')});
+$('exportData').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='backup-padaria-'+today()+'.json';a.click();URL.revokeObjectURL(url);toast('Backup exportado.')});
+$('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!Array.isArray(x.products)||!Array.isArray(x.sales)||!x.settings)throw Error();if(!confirm('Importar este backup e substituir os dados atuais?'))return;db={settings:x.settings,products:x.products,sales:x.sales,nextNumber:Number(x.nextNumber)||1};persist();logoData=db.settings.logo||'';fillSettings();renderProducts();renderHistory();renderSale();toast('Backup importado.')}catch(err){toast('Arquivo de backup inválido.')}e.target.value=''};r.readAsText(f)});
+$('eraseData').addEventListener('click',()=>{if(!confirm('ATENÇÃO: apagar todos os produtos, recibos e configurações deste navegador? Exporte um backup antes.'))return;if(!confirm('Confirma definitivamente a exclusão de todos os dados?'))return;localStorage.removeItem(KEY);db=loadDB();logoData='';saleItems=[];fillSettings();renderProducts();renderHistory();renderSale();toast('Dados apagados.')});
+fillSettings();renderProducts();renderSale();renderHistory();updateItemSubtotal();
+})();
+</script>
+</body>
+</html>
