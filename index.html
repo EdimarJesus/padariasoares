@@ -295,6 +295,63 @@ html,body{background:#f3e8d9}
  .app{padding:0!important}
 }
 
+
+/* V6: correção de estouro horizontal em telas pequenas */
+html,body{width:100%;max-width:100%;overflow-x:clip}
+*,*::before,*::after{box-sizing:border-box}
+.app,.content-shell,main,.page,.layout,.panel,.preview-panel,.fieldgrid,.product-add,.field,.tablewrap,.receipt{min-width:0;max-width:100%}
+.content-shell{overflow:hidden}
+.layout{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr)}
+.fieldgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.product-add{grid-template-columns:minmax(0,1fr) 82px 112px 120px auto}
+.field input,.field select,.field textarea,.searchrow input{max-width:100%;min-width:0}
+.tablewrap{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.tablewrap table{width:100%;min-width:430px}
+.receipt-table{min-width:0!important;table-layout:fixed}
+.receipt-table th,.receipt-table td{overflow-wrap:anywhere}
+@media(max-width:1020px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .product-add{grid-template-columns:minmax(0,1fr) 82px 112px 120px}
+}
+@media(max-width:640px){
+ .app{width:100%;padding-left:8px;padding-right:8px}
+ .content-shell{width:100%;padding:10px;overflow:hidden}
+ .layout{display:block}
+ .layout>.panel{width:100%;margin-bottom:12px}
+ .fieldgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .product-add{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .product-add .field:first-child,.product-add .field:nth-child(4),.product-add button{grid-column:1/-1}
+ .product-add .field:nth-child(2),.product-add .field:nth-child(3){grid-column:auto}
+ .product-add button{width:100%}
+ .field input,.field select,.field textarea{width:100%;font-size:16px}
+ .sectionhead{display:flex;align-items:flex-start;flex-wrap:wrap}
+ .sectionhead>div{min-width:0;flex:1 1 180px}
+ .sectionhead>.btn{margin-left:auto;flex:0 0 auto}
+ .tablewrap{width:100%;overflow-x:auto}
+ .tablewrap table{min-width:430px}
+ .totalbar{gap:8px}
+ .totalbar strong{font-size:clamp(17px,5vw,21px);white-space:nowrap}
+ .receipt{width:100%}
+ .receipt-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .receipt-logo,.receipt-contact{min-width:0;overflow-wrap:anywhere}
+ .history-item{min-width:0}
+ .searchrow{flex-wrap:wrap}
+ .searchrow input{flex:1 1 100%}
+ .tabs{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+ .tabs button{flex-shrink:0}
+}
+@media(max-width:390px){
+ .fieldgrid{grid-template-columns:minmax(0,1fr)}
+ .field.full{grid-column:auto}
+ .product-add{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .receipt-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+@media print{
+ html,body{overflow:visible!important}
+ .content-shell{overflow:visible!important}
+ .layout,.panel,.preview-panel{overflow:visible!important}
+}
+
 </style>
 </head>
 <body>
